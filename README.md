@@ -2,9 +2,11 @@
 
 ## Prerequisites
 
-* VirtualBox
-* Vagrant
-* Vagrant Reload plugin
+### VirtualBox
+
+### Vagrant
+
+### Vagrant Reload plugin
 
 Install this with:
 
