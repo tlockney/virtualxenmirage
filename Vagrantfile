@@ -16,27 +16,30 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
   config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get -y update
-    sudo apt-get install -y linux-headers-$(uname -r) linux-headers-generic xen-hypervisor-4.4-amd64 bridge-utils build-essential git xserver-xorg xserver-xorg-core
+    apt-get -y update
+    apt-get install -y linux-headers-$(uname -r) linux-headers-generic xen-hypervisor-4.4-amd64 bridge-utils build-essential git xserver-xorg xserver-xorg-core
   SHELL
   config.vm.provision :reload
   config.vm.provision "shell", inline: <<-SHELL
     wget http://download.virtualbox.org/virtualbox/#{VBOX_VERSION}/VBoxGuestAdditions_#{VBOX_VERSION}.iso
-    sudo mkdir /media/VBoxGuestAdditions
-    sudo mount -o loop,ro VBoxGuestAdditions_#{VBOX_VERSION}.iso /media/VBoxGuestAdditions
+    mkdir /media/VBoxGuestAdditions
+    mount -o loop,ro VBoxGuestAdditions_#{VBOX_VERSION}.iso /media/VBoxGuestAdditions
     yes | sudo sh /media/VBoxGuestAdditions/VBoxLinuxAdditions.run --nox11
     rm VBoxGuestAdditions_#{VBOX_VERSION}.iso
-    sudo umount /media/VBoxGuestAdditions
-    sudo rmdir /media/VBoxGuestAdditions
+    umount /media/VBoxGuestAdditions
+    rmdir /media/VBoxGuestAdditions
 
-    sudo apt-get -y remove linux-headers-$(uname -r) linux-headers-generic build-essential xserver-xorg xserver-xorg-core
-    sudo apt-get -y purge linux-headers-$(uname -r) linux-headers-generic build-essential xserver-xorg xserver-xorg-core
-    sudo apt-get -y autoremove
+    apt-get -y remove linux-headers-$(uname -r) linux-headers-generic build-essential xserver-xorg xserver-xorg-core
+    apt-get -y purge linux-headers-$(uname -r) linux-headers-generic build-essential xserver-xorg xserver-xorg-core
+    apt-get -y autoremove
 
-    sudo apt-get -y install avahi-daemon ocaml-compiler-libs ocaml-interp ocaml-base-nox ocaml-base ocaml ocaml-nox ocaml-native-compilers camlp4 camlp4-extra m4 zeroinstall-injector libssl-dev pkg-config
-    sudo -u vagrant 0install add opam http://tools.ocaml.org/opam.xml
-    sudo -u vagrant opam init -a
-    sudo -u vagrant opam install mirage -v -y
+    apt-get -y install avahi-daemon ocaml-compiler-libs ocaml-interp ocaml-base-nox ocaml-base ocaml ocaml-nox ocaml-native-compilers camlp4 camlp4-extra m4 zeroinstall-injector libssl-dev pkg-config
+  SHELL
+  
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    0install add opam http://tools.ocaml.org/opam.xml
+    /home/vagrant/bin/opam init -a
+    /home/vagrant/bin/opam install mirage -v -y
   SHELL
   config.vm.provision :reload
 
