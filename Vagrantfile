@@ -11,7 +11,8 @@ Vagrant.configure(2) do |config|
     vb.memory = "4096"
   end
 
-  config.vm.network "private_network", type: "dhcp"
+  config.vm.network "private_network", ip: "192.168.50.4", auto_config: false, adapter: "2"
+  # config.vm.network "private_network", type: "dhcp"
 
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
@@ -33,7 +34,37 @@ Vagrant.configure(2) do |config|
     apt-get -y purge linux-headers-$(uname -r) linux-headers-generic build-essential xserver-xorg xserver-xorg-core
     apt-get -y autoremove
 
-    apt-get -y install avahi-daemon ocaml-compiler-libs ocaml-interp ocaml-base-nox ocaml-base ocaml ocaml-nox ocaml-native-compilers camlp4 camlp4-extra m4 zeroinstall-injector libssl-dev pkg-config
+    apt-get -y install avahi-daemon ocaml-compiler-libs ocaml-interp ocaml-base-nox ocaml-base ocaml ocaml-nox ocaml-native-compilers camlp4 camlp4-extra m4 zeroinstall-injector libssl-dev pkg-config dnsmasq
+
+    cat > /etc/network/interfaces <<EOF
+# /etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet manual
+    pre-up ifconfig $IFACE up
+    post-down ifconfig $IFACE down
+
+auto br0
+iface br0 inet static
+    bridge_ports eth1
+    address 192.168.56.5
+    broadcast 192.168.56.255
+    netmask 255.255.255.0
+    # disable ageing (turn bridge into switch)
+    up /sbin/brctl setageing br0 0
+    # disable stp
+    up /sbin/brctl stp br0 off
+EOF
+
+    cat > /etc/dnsmasq.conf <<EOF
+interface=br0
+dhcp-range=192.168.56.150,192.168.56.200,1h
+EOF
   SHELL
   
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
