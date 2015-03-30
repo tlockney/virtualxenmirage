@@ -10,7 +10,7 @@ This is all based on [this post](http://www.skjegstad.com/blog/2015/01/19/mirage
 
 ## Installation
 
-Assuming you have all the prereqs installed already, you should be able to simply run `vagrant up`. After a few minutes -- depending on your network speed -- it should all be ready to go.
+Assuming you have all the prereqs installed already, you should be able to simply run `vagrant up`. After a few minutes—depending on your network speed—it should all be ready to go.
 
 ## Usage
 
